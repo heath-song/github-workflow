@@ -20,4 +20,6 @@ jobs:
 
       - name: Check Latest Release Branch
         if: env.latest_branch_name == null
-        run: exit 1
+        run: |
+          echo "Error: There is no release branch to request."
+          exit 1
