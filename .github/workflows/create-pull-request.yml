@@ -6,9 +6,6 @@ on:
     branches:
       - "feature/**"
 
-env:
-  ISSUE_ID: "${{ github.ref_name }}"
-
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
@@ -20,5 +17,7 @@ jobs:
         run: |
           git fetch
           echo "latest_branch_name=$(git branch -a | grep -E -o 'release/[0-9]*' | sort -r | head -1 | tr -d ' ')" >> $GITHUB_ENV
+
+      - name: Check Latest Release Branch
+        run: |
           echo "${{ env.latest_branch_name }}"
-          echo "$ISSUE_ID"
