@@ -13,11 +13,12 @@ jobs:
   create-pull-request:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Find Latest Release Branch
         run: |
           git fetch
-          echo "::set-output name=LATEST_RELEASE_BRANCH::$(git branch -a | grep -E -o 'release/[0-9]*' | sort -r | head -1 | tr -d ' ')"
+          echo "LATEST_RELEASE_BRANCH = $(git branch -a | grep -E -o 'release/[0-9]*' | sort -r | head -1 | tr -d ' ')"
+          echo "$LATEST_RELEASE_BRANCH"
           echo "$ISSUE_ID"
