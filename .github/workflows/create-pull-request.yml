@@ -20,4 +20,4 @@ jobs:
 
       - name: Check Latest Release Branch
         if: env.latest_branch_name == null
-        script: exit 1
+        run: exit 1
