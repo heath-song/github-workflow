@@ -27,10 +27,8 @@ jobs:
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           destination_branch: ${{ env.latest_branch_name }}
           pr_title: "Automatic Generated Draft PR"
           pr_template: ".github/PULL_REQUEST_TEMPLATE.md"
-          pr_reviewer: "@hogangnono/fe-hgnn"
           pr_assignee: ${{ github.actor }}
           pr_draft: true
