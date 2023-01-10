@@ -8,7 +8,7 @@ on:
 
 env:
   ISSUE_ID: "${{ github.ref_name }}"
-  LATEST_RELEASE_BRANCH: null
+  LATEST_RELEASE_BRANCH: ${{ env.latest_branch_name }}
 
 jobs:
   create-pull-request:
@@ -20,6 +20,6 @@ jobs:
       - name: Find Latest Release Branch
         run: |
           git fetch
-          echo "LATEST_RELEASE_BRANCH=$(git branch -a | grep -E -o 'release/[0-9]*' | sort -r | head -1 | tr -d ' ')"
+          echo "latest_branch_name=$(git branch -a | grep -E -o 'release/[0-9]*' | sort -r | head -1 | tr -d ' ')" >> $GITHUB_ENV
           echo "$LATEST_RELEASE_BRANCH"
           echo "$ISSUE_ID"
