@@ -1,13 +1,11 @@
-name: Auto-Create Feature PR
-run-name: Automatically creating a feature PR for ${{ github.actor }}
+name: Auto-Create PR
+run-name: Automatically creating a PR for ${{ github.actor }}
 
-on:
-  push:
-    branches:
-      - "feature/**"
+on: create
 
 jobs:
-  create-pull-request:
+  create-feature-pull-request:
+    if: ${{ startsWith(github.ref_name, 'feature/') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +27,7 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: ${{ env.latest_release_branch }}
-          pr_title: "[${{ env.issue_id }}] Automatic Generated Draft PR"
+          pr_title: "[${{ env.issue_id }}] Automatically Created Feature PR"
           pr_template: ".github/PULL_REQUEST_TEMPLATE.md"
           pr_assignee: ${{ github.actor }}
           pr_draft: true
