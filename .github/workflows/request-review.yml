@@ -43,10 +43,8 @@ jobs:
 
     - name: Send Slack Notification
       uses: rtCamp/action-slack-notify@v2.2.1
-      with:
-        slack-channel: "서비스개발_fe_hogangnono"
-        slack-username: GitHub Actions
-        slack-text-file: slack_message.txt
       env:
+        SLACK_CHANNEL: "서비스개발_fe_hogangnono"
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_MESSAGE: "test"
 
