@@ -37,6 +37,15 @@ jobs:
                 printf "%s\n" "+ $TARGET_PR_URL_LIST"
             fi
         done
-        printf "%s\n" "$TARGET_PR_URL_LIST"
+        echo "PRs with less than 2 approvals: $TARGET_PR_URL_LIST" > slack_message.txt
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send Slack Notification
+      uses: rtCamp/action-slack-notify@v2.2.1
+      with:
+        slack-channel: "서비스개발_fe_hogangnono"
+        slack-username: GitHub Actions
+        slack-text-file: slack_message.txt
+        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
