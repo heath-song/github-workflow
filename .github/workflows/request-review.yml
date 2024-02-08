@@ -47,5 +47,6 @@ jobs:
         slack-channel: "서비스개발_fe_hogangnono"
         slack-username: GitHub Actions
         slack-text-file: slack_message.txt
-        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
