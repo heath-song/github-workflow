@@ -33,6 +33,7 @@ jobs:
             approved_reviews=$(echo "$line" | jq -r '.reviews | map(select(.state == "APPROVED")) | length')
             echo "$url $approved_reviews"
             if [ "$approved_reviews" -lt 2 ]; then
+                echo "$url need reviews"
                 TARGET_PR_URL_LIST+="\n$url"
             fi
         done
