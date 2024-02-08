@@ -30,6 +30,8 @@ jobs:
       run: |
         reviews=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json reviews --template '{{json .reviews}}')
         echo "::set-output name=reviews::${reviews}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check approvals
       id: check_approvals
