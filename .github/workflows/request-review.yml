@@ -30,14 +30,14 @@ jobs:
       run: |
         reviews=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json reviews --template '{{json .reviews}}')
         echo "::set-output name=reviews::${reviews}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check approvals
       id: check_approvals
       run: |
         approvals=$(echo ${{ steps.reviews.outputs.reviews }} | jq 'map(select(.state == "APPROVED")) | length')
         echo "::set-output name=approvals::${approvals}"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Notify on unapproved PRs
       if: ${{ needs.check_approvals.outputs.approvals }} < 2
