@@ -21,6 +21,8 @@ jobs:
 
     - name: PR 목록 가져오기
       id: get-prs
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         printf "%s\n" "오픈된 PR의 목록 불러오기"
         PR_LIST=$(gh pr list --state=open --draft=false --json number,title,url,reviews -q ".[] | {number,title,url,reviews}")
@@ -37,14 +39,6 @@ jobs:
                 printf "%s\n" "+ $TARGET_PR_URL_LIST"
             fi
         done <<< "$PR_LIST"
-        echo "::set-output name=slack_message::$TARGET_PR_URL_LIST"
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Send Slack Notification
-      uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_CHANNEL: "서비스개발_fe_hogangnono"
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "${{ steps.get-prs.outputs.slack_message }}"
-
+        printf "%s\n"  "슬랙 웹훅으로 메세지 보내기"
+        curl -X POST --data-urlencode "payload={\"text\": \"$TARGET_PR_URL_LIST"}" https://hooks.slack.com/services/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
