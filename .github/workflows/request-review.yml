@@ -25,3 +25,5 @@ jobs:
         PR_LIST=$(gh pr list --json number,title,url,state,created_at,updated_at -q ".[] | {number,title,url,state,created_at,updated_at}")
         echo "$PR_LIST"
         echo "::set-output name=pr_list::$(echo "$PR_LIST")"
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
