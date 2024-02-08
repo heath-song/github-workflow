@@ -1,54 +1,35 @@
-name: Notify on Unapproved PRs
+name: PR Approval Reminder
 
 on:
   schedule:
-    - cron: '0 10 * * 1-5' # Daily at midnight UTC
-  workflow_dispatch:
+    - cron: '0 10 * * 1-5'  # 매일 10시에 실행
 
 jobs:
-  notify:
+  pr-approval-reminder:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout 코드
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 14
-
-    - name: Install dependencies
-      run: npm install -g github
-
-    - name: Get PR information
-      id: pr
+    - name: 설정 및 종속성 설치
       run: |
-        echo "${{ github.event.pull_request.number }}"
-        echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+        npm install -g github
+        npm install -g @actions/core
+      shell: bash
 
-    - name: Get reviews for PR
-      id: reviews
+    - name: PR 목록 가져오기
+      id: get-prs
       run: |
-        reviews=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json reviews --template '{{json .reviews}}')
-        echo "${reviews}"
-        echo "reviews=${reviews}" >> $GITHUB_OUTPUT
+        PR_LIST=$(gh pr list --json number,title,url,requested_reviewers -s "state:open" -q "is:pr review:changes-requested" | jq -r '.[] | select(.requested_reviewers | length > 1) | .number, .title, .url' | paste -sd " " -)
+        echo "::set-output name=pr_list::$PR_LIST"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Check approvals
-      id: check_approvals
-      run: |
-        approvals=$(echo ${{ steps.reviews.outputs.reviews }} | jq 'map(select(.state == "APPROVED")) | length')
-        echo "::set-output name=approvals::${approvals}"
-
-    - name: Notify on unapproved PRs
-      if: ${{ needs.check_approvals.outputs.approvals }} < 2
-      uses: rtCamp/action-slack-notify@v2
-      with:
-        slack-channel: '서비스개발_fe_hogangnono'
-        slack-color: '#FF0000'
-        slack-title: 'test'
-        slack-text: |
-          - Repository: ${{ github.repository }}
-          - Pull Request: ${{ github.event.pull_request.html_url }}
+    - name: PR 목록을 슬랙 알림으로 전송
+      if: ${{ steps.get-prs.outputs.pr_list != '' }}
+      uses: rtCamp/action-slack@v3
+      env:
+        SLACK_CHANNEL: "서비스개발_fe_hogangnono"
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_MESSAGE: "${{ steps.get-prs.outputs.pr_list }}"
