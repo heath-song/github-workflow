@@ -22,7 +22,7 @@ jobs:
     - name: PR 목록 가져오기
       id: get-prs
       run: |
-        PR_LIST=$(gh pr list --json number,title,url,state,created_at,updated_at -q ".[] | {number,title,url,state,created_at,updated_at}")
+        PR_LIST=$(gh pr list --json number,title,url,state,createdAt,updatedAt -q ".[] | {number,title,url,state,createdAt,updatedAt}")
         echo "$PR_LIST"
         echo "::set-output name=pr_list::$(echo "$PR_LIST")"
       env:
