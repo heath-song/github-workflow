@@ -2,15 +2,15 @@ name: PR Approval Reminder
 
 on:
   schedule:
-    - cron: '0 10 * * 1-5'  # 매일 10시에 실행
-  workflow_dispatch:
+    - cron: '0 10 * * 1-5'  # 평일 10시에 실행
+  workflow_dispatch: # 임의로 실행
 
 jobs:
   pr-approval-reminder:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout 코드
+    - name: Checkout
       uses: actions/checkout@v2
 
     - name: 설정 및 종속성 설치
@@ -21,20 +21,7 @@ jobs:
 
     - name: PR 목록 가져오기
       id: get-prs
-      # run: |
-      #   PR_LIST=$(gh pr list --json number,title,url,reviews -s "open" -q "is:pr review:changes-requested" | jq -r '.[] | select(.reviews | length > 1) | .number, .title, .url' | paste -sd " " -)
-      #   echo "pr_list=$PR_LIST" >> $GITHUB_OUTPUT
       run: |
-        PR_LIST=$(gh pr list --json number,title,url,reviews)
-        echo "pr_list=$PR_LIST" >> $GITHUB_OUTPUT
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    # - name: PR 목록을 Slack 알림으로 전송
-    #   if: ${{ steps.get-prs.outputs.pr_list != '' }}
-    #   uses: rtCamp/action-slack-notify@v2.2.1
-    #   with:
-    #     status: ${{ job.status }}
-    #     text: "${{ steps.get-prs.outputs.pr_list }}"
-    #   env:
-    #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        PR_LIST=$(gh pr list --json number,title,url,state,created_at,updated_at -q ".[] | {number,title,url,state,created_at,updated_at}")
+        echo "$PR_LIST"
+        echo "::set-output name=pr_list::$(echo "$PR_LIST")"
