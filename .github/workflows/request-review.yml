@@ -27,10 +27,11 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: PR 목록을 슬랙 알림으로 전송
+    - name: PR 목록을 Slack 알림으로 전송
       if: ${{ steps.get-prs.outputs.pr_list != '' }}
-      uses: rtCamp/action-slack@v3
+      uses: rtCamp/action-slack-notify@v2.2.1
+      with:
+        status: ${{ job.status }}
+        text: "${{ steps.get-prs.outputs.pr_list }}"
       env:
-        SLACK_CHANNEL: "서비스개발_fe_hogangnono"
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "${{ steps.get-prs.outputs.pr_list }}"
