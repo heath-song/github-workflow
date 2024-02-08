@@ -32,9 +32,9 @@ jobs:
             url=$(echo "$line" | jq -r '.url')
             approved_reviews=$(echo "$line" | jq -r '.reviews | map(select(.state == "APPROVED")) | length')
             if [ "$approved_reviews" -lt 2 ]; then
-                printf "- %s\n" "$TARGET_PR_URL_LIST"
+                printf "%s\n" "- $TARGET_PR_URL_LIST"
                 TARGET_PR_URL_LIST+="\n$url"
-                printf "+ %s\n" "$TARGET_PR_URL_LIST"
+                printf "%s\n" "+ $TARGET_PR_URL_LIST"
             fi
         done
         printf "%s\n" "$TARGET_PR_URL_LIST"
