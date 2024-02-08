@@ -24,8 +24,26 @@ jobs:
       run: |
         PR_LIST=$(gh pr list --state=open --draft=false --json number,title,url,reviews -q ".[] | {number,title,url,reviews}")
         echo "$PR_LIST"
-        PR_LIST_NEED_REVIEW=$(gh pr list --json number,headRefName,title,reviews.totalCount,reviews.nodes.state --jq ".[] | select(.reviews.totalCount < 2 and .reviews.nodes[].state == "APPROVED")")
-        echo "$PR_LIST_NEED_REVIEW"
+
+        PR_LIST_NEED_REVIEW=""
+        
+        echo "$PR_LIST" | while read -r line; do
+            # PR의 state, number, title, url, reviews 정보 추출
+            state=$(echo "$line" | jq -r '.state')
+            number=$(echo "$line" | jq -r '.number')
+            title=$(echo "$line" | jq -r '.title')
+            url=$(echo "$line" | jq -r '.url')
+            reviews=$(echo "$line" | jq -r '.reviews | length')
+        
+            # state가 "OPEN"이고, reviews 개수가 2 미만인 경우만 PR_LIST_NEED_REVIEW에 추가
+            if [ "$reviews" -lt 2 ]; then
+                PR_LIST_NEED_REVIEW+="\n{\"number\":$number,\"title\":\"$title\",\"url\":\"$url\",\"state\":\"$state\",\"reviews\":$reviews}"
+            fi
+        done
+        
+        # 결과 출력
+        echo -e "$PR_LIST_NEED_REVIEW"
+        
         echo "::set-output name=pr_list::$(echo "$PR_LIST")"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
