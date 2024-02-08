@@ -28,7 +28,7 @@ jobs:
 
         printf "%s\n"  "승인된 리뷰 개수가 2개 미만인 PR 목록 만들기"
         TARGET_PR_URL_LIST=""
-        echo "$PR_LIST" | while read -r line; do
+        while IFS= read -r line; do
             url=$(echo "$line" | jq -r '.url')
             approved_reviews=$(echo "$line" | jq -r '.reviews | map(select(.state == "APPROVED")) | length')
             if [ "$approved_reviews" -lt 2 ]; then
@@ -36,8 +36,8 @@ jobs:
                 TARGET_PR_URL_LIST+="\n$url"
                 printf "%s\n" "+ $TARGET_PR_URL_LIST"
             fi
-        done
-        echo "PRs with less than 2 approvals: $TARGET_PR_URL_LIST" > slack_message.txt
+        done <<< "$PR_LIST"
+        echo "::set-output name=slack_message::$TARGET_PR_URL_LIST"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,5 +46,5 @@ jobs:
       env:
         SLACK_CHANNEL: "서비스개발_fe_hogangnono"
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "test"
+        SLACK_MESSAGE: "${{ steps.get-prs.outputs.slack_message }}"
 
