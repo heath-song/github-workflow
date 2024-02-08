@@ -1,0 +1,48 @@
+name: Notify on Unapproved PRs
+
+on:
+  schedule:
+    - cron: '0 10 * * 1-5' # Daily at midnight UTC
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 14
+
+    - name: Install dependencies
+      run: npm install -g github
+
+    - name: Get PR information
+      id: pr
+      run: echo "::set-output name=pr_number::${{ github.event.pull_request.number }}"
+
+    - name: Get reviews for PR
+      id: reviews
+      run: |
+        reviews=$(gh pr view ${{ steps.pr.outputs.pr_number }} --json reviews --template '{{json .reviews}}')
+        echo "::set-output name=reviews::${reviews}"
+
+    - name: Check approvals
+      id: check_approvals
+      run: |
+        approvals=$(echo ${{ steps.reviews.outputs.reviews }} | jq 'map(select(.state == "APPROVED")) | length')
+        echo "::set-output name=approvals::${approvals}"
+
+    - name: Notify on unapproved PRs
+      if: ${{ needs.check_approvals.outputs.approvals }} < 2
+      uses: rtCamp/action-slack-notify@v2
+      with:
+        slack-channel: '서비스개발_fe_hogangnono'
+        slack-color: '#FF0000'
+        slack-title: 'test'
+        slack-text: |
+          - Repository: ${{ github.repository }}
+          - Pull Request: ${{ github.event.pull_request.html_url }}
