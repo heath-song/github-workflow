@@ -23,6 +23,7 @@ jobs:
       id: get-prs
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       run: |
         printf "%s\n" "오픈된 PR의 목록 불러오기"
         PR_LIST=$(gh pr list --state=open --draft=false --json number,title,url,reviews -q ".[] | {number,title,url,reviews}")
@@ -39,4 +40,4 @@ jobs:
         done <<< "$PR_LIST"
 
         printf "%s\n"  "슬랙 웹훅으로 메세지 보내기"
-        curl -X POST --data-urlencode "payload={\"text\": \"$TARGET_PR_URL_LIST\"}" https://hooks.slack.com/services/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
+        curl -X POST --data-urlencode "payload={\"text\": \"$TARGET_PR_URL_LIST\"}" ${SLACK_WEBHOOK}
