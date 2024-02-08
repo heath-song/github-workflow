@@ -22,11 +22,11 @@ jobs:
     - name: PR 목록 가져오기
       id: get-prs
       run: |
-        echo "오픈된 PR의 목록 불러오기"
+        printf "%s\n" "오픈된 PR의 목록 불러오기"
         PR_LIST=$(gh pr list --state=open --draft=false --json number,title,url,reviews -q ".[] | {number,title,url,reviews}")
-        echo "$PR_LIST"
+        printf "%s\n" "$PR_LIST"
 
-        echo "승인된 리뷰 개수가 2개 미만인 PR 목록 만들기"
+        printf "%s\n"  "승인된 리뷰 개수가 2개 미만인 PR 목록 만들기"
         TARGET_PR_URL_LIST=""
         echo "$PR_LIST" | while read -r line; do
             url=$(echo "$line" | jq -r '.url')
@@ -35,6 +35,6 @@ jobs:
                 TARGET_PR_URL_LIST+="\n$url"
             fi
         done
-        echo -e "$TARGET_PR_URL_LIST"
+        printf "%s\n" "$TARGET_PR_URL_LIST"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
