@@ -34,11 +34,9 @@ jobs:
             url=$(echo "$line" | jq -r '.url')
             approved_reviews=$(echo "$line" | jq -r '.reviews | map(select(.state == "APPROVED")) | length')
             if [ "$approved_reviews" -lt 2 ]; then
-                printf "%s\n" "- $TARGET_PR_URL_LIST"
                 TARGET_PR_URL_LIST+="\n$url"
-                printf "%s\n" "+ $TARGET_PR_URL_LIST"
             fi
         done <<< "$PR_LIST"
 
         printf "%s\n"  "슬랙 웹훅으로 메세지 보내기"
-        curl -X POST --data-urlencode "payload={\"text\": \"$TARGET_PR_URL_LIST"}" https://hooks.slack.com/services/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
+        curl -X POST --data-urlencode "payload={\"text\": \"$TARGET_PR_URL_LIST\"}" https://hooks.slack.com/services/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
