@@ -32,11 +32,9 @@ jobs:
             url=$(echo "$line" | jq -r '.url')
             approved_reviews=$(echo "$line" | jq -r '.reviews | map(select(.state == "APPROVED")) | length')
             if [ "$approved_reviews" -lt 2 ]; then
-                echo "$TARGET_PR_URL_LIST"
                 TARGET_PR_URL_LIST+="\n$url"
-                echo "$TARGET_PR_URL_LIST"
             fi
         done
-        echo "$TARGET_PR_URL_LIST"
+        echo -e "$TARGET_PR_URL_LIST"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
