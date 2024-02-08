@@ -3,6 +3,7 @@ name: PR Approval Reminder
 on:
   schedule:
     - cron: '0 10 * * 1-5'  # 매일 10시에 실행
+  workflow_dispatch:
 
 jobs:
   pr-approval-reminder:
