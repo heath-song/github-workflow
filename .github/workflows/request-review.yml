@@ -22,7 +22,7 @@ jobs:
     - name: PR 목록 가져오기
       id: get-prs
       run: |
-        PR_LIST=$(gh pr list --json number,title,url,requested_reviewers -s "state:open" -q "is:pr review:changes-requested" | jq -r '.[] | select(.requested_reviewers | length > 1) | .number, .title, .url' | paste -sd " " -)
+        PR_LIST=$(gh pr list --json number,title,url,requested_reviewers -s "open" -q "is:pr review:changes-requested" | jq -r '.[] | select(.requested_reviewers | length > 1) | .number, .title, .url' | paste -sd " " -)
         echo "::set-output name=pr_list::$PR_LIST"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
