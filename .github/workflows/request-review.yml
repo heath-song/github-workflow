@@ -1,8 +1,8 @@
 name: PR Approval Reminder
 
 on:
-  schedule:
-    - cron: '0 10 * * 1-5'  # 평일 10시에 실행
+#   schedule:
+#     - cron: '0 10 * * 1-5'  # 평일 10시에 실행
   workflow_dispatch: # 임의로 실행
 
 jobs:
